@@ -17,13 +17,15 @@ npm install
 # Start development server
 npm run dev
 
-# Frontend will be running on http://localhost:3000
-TO RUN BACKEND
+# Frontend will be running on http://localhost:3000 
+```
+### Frontend Setup and Running
 
 Try running some of the following tasks:
-npx hardhat compile
+
 
 ```shell
+npx hardhat compile
 npx hardhat help
 npx hardhat test
 REPORT_GAS=true npx hardhat test
