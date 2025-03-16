@@ -1,12 +1,23 @@
-# Sample Hardhat Project
+
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
 
-To run the project of frontend
+# TechAlpha - Decentralized Prediction Market Platform 🎯
+
+## 🚀 Quick Start Guide
+
+### Frontend Setup and Running
+```bash
+# Navigate to frontend directory
 cd frontend
-npm install 
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
 
+# Frontend will be running on http://localhost:3000
 TO RUN BACKEND
 
 Try running some of the following tasks:
