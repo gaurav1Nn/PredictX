@@ -2,7 +2,15 @@
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
 
+To run the project of frontend
+cd frontend
+npm install 
+npm run dev
+
+TO RUN BACKEND
+
 Try running some of the following tasks:
+npx hardhat compile
 
 ```shell
 npx hardhat help
