@@ -11,29 +11,8 @@ import { BettingInterface } from "@/components/betting-interface";
 import { Dashboard } from "@/components/dashboard";
 import { CreateMarket } from "@/components/create-market";
 import { motion } from "framer-motion";
-import { WagmiProvider } from "wagmi";
-import { config } from "@/lib/wagmi";
 import { ErrorBoundary } from "react-error-boundary";
-import { injected } from "wagmi/connectors";
-
-interface ErrorFallbackProps {
-  error: Error;
-}
-
-function ErrorFallback({ error }: ErrorFallbackProps) {
-  return (
-    <div className="container mx-auto px-4 py-8 text-center text-red-500">
-      <h2 className="text-2xl font-bold">Something went wrong</h2>
-      <p>{error.message}</p>
-      <button
-        onClick={() => window.location.reload()}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-      >
-        Reload
-      </button>
-    </div>
-  );
-}
+import { injected, metaMask } from "wagmi/connectors";
 
 function MainContent() {
   return (
@@ -67,56 +46,23 @@ function MainContent() {
   );
 }
 
-export const Home = React.memo(function Home() {
-  console.log("Rendering Home component");
+export default function Home() {
   const { isConnected } = useAccount();
-  const { connect, error: connectError } = useConnect();
+  const { connect, isPending } = useConnect();
 
-  useEffect(() => {
-    if (!isConnected && !connectError) {
-      const connectWallet = async () => {
-        try {
-          await connect({ connector: injected() });
-        } catch (err: unknown) {
-          console.error("Failed to auto-connect:", err);
-        }
-      };
-      connectWallet();
+  const handleConnect = async () => {
+    console.log("Handle connect called"); // Debug log
+    try {
+      await connect({
+        connector: metaMask()
+      });
+    } catch (error) {
+      console.error("Connection error:", error);
     }
-  }, [isConnected, connect, connectError]);
+  };
 
   if (!isConnected) {
     return (
-      <WagmiProvider config={config}>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <div className="min-h-screen bg-background">
-            <motion.header
-              className="border-b"
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  PredictX
-                </h1>
-                <div className="flex items-center gap-4">
-                  <ThemeToggle />
-                  <WalletConnect />
-                </div>
-              </div>
-            </motion.header>
-            <main>
-              <LandingHero onConnect={() => connect({ connector: injected() })} />
-            </main>
-          </div>
-        </ErrorBoundary>
-      </WagmiProvider>
-    );
-  }
-
-  return (
-    <WagmiProvider config={config}>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <div className="min-h-screen bg-background">
           <motion.header
@@ -135,16 +81,55 @@ export const Home = React.memo(function Home() {
               </div>
             </div>
           </motion.header>
-
           <main>
-            <Suspense fallback={<div className="container mx-auto px-4 py-8 text-center">Loading...</div>}>
-              <MainContent />
-            </Suspense>
+            <LandingHero onConnect={handleConnect} />
           </main>
         </div>
       </ErrorBoundary>
-    </WagmiProvider>
-  );
-});
+    );
+  }
 
-export default Home;
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <div className="min-h-screen bg-background">
+        <motion.header
+          className="border-b"
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              PredictX
+            </h1>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <WalletConnect />
+            </div>
+          </div>
+        </motion.header>
+
+        <main>
+          <Suspense fallback={<div className="container mx-auto px-4 py-8 text-center">Loading...</div>}>
+            <MainContent />
+          </Suspense>
+        </main>
+      </div>
+    </ErrorBoundary>
+  );
+}
+
+function ErrorFallback({ error }: { error: Error }) {
+  return (
+    <div className="container mx-auto px-4 py-8 text-center text-red-500">
+      <h2 className="text-2xl font-bold">Something went wrong</h2>
+      <p>{error.message}</p>
+      <button
+        onClick={() => window.location.reload()}
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Reload
+      </button>
+    </div>
+  );
+}

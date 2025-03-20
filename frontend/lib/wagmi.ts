@@ -1,32 +1,20 @@
-import { defineChain } from "viem";
-import { http } from "viem";
-import { createConfig } from "wagmi";
-import { injected } from "wagmi/connectors";
+"use client";
 
-export const hardhatLocal = defineChain({
-  id: 31337,
-  name: "Hardhat",
-  network: "hardhat",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ether",
-    symbol: "ETH",
-  },
-  rpcUrls: {
-    default: {
-      http: [process.env.NEXT_PUBLIC_RPC_URL || "http://127.0.0.1:8545"],
-    },
-  },
-});
+import { http, createConfig } from 'wagmi';
+import { mainnet, sepolia } from 'wagmi/chains';
+import { injected, metaMask } from 'wagmi/connectors';
 
-const chains = [hardhatLocal] as const;
-
+// Create wagmi config
 export const config = createConfig({
-  chains,
-  connectors: [injected()],
+  chains: [mainnet, sepolia],
+  connectors: [
+    metaMask(),
+    injected({
+      target: 'metaMask'
+    })
+  ],
   transports: {
-    [hardhatLocal.id]: http(process.env.NEXT_PUBLIC_RPC_URL || "http://127.0.0.1:8545"),
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
   },
 });
-
-export { chains };

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Brain, Shield, Microscope } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface LandingHeroProps {
   onConnect: () => void;
@@ -39,6 +40,17 @@ export function LandingHero({ onConnect }: LandingHeroProps) {
     },
   ];
 
+  const handleClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Start Predicting clicked"); // Debug log
+    try {
+      await onConnect();
+    } catch (error) {
+      console.error("Connection error in LandingHero:", error);
+    }
+  };
+
   return (
     <div className="relative overflow-hidden">
       {/* Hero Section */}
@@ -52,7 +64,11 @@ export function LandingHero({ onConnect }: LandingHeroProps) {
               The first cross-chain prediction market focused on existential risks and global challenges.
             </p>
             <div className="flex gap-4 justify-center">
-              <Button size="lg" onClick={onConnect}>
+              <Button
+                size="lg"
+                onClick={handleClick}
+                className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity cursor-pointer"
+              >
                 Start Predicting
               </Button>
               <Button size="lg" variant="outline">

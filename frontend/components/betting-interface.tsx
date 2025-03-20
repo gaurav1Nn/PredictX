@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,17 +9,10 @@ import { usePredictionMarket } from "@/lib/usePredictionMarket";
 import { parseEther } from "viem";
 
 export const BettingInterface = React.memo(function BettingInterface() {
-  console.log("Rendering BettingInterface");
   const [selectedMarket, setSelectedMarket] = useState<string>("");
   const [outcomeIndex, setOutcomeIndex] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const { markets, fetchMarkets, placeBet } = usePredictionMarket();
-
-  useEffect(() => {
-    if (markets.length === 0) {
-      fetchMarkets();
-    }
-  }, [fetchMarkets, markets.length]);
+  const { markets, placeBet, isLoading } = usePredictionMarket();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +44,10 @@ export const BettingInterface = React.memo(function BettingInterface() {
       alert("Failed to place bet. See console for details.");
     }
   };
+
+  if (isLoading) {
+    return <div>Loading markets...</div>;
+  }
 
   return (
     <Card>

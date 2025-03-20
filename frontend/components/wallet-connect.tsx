@@ -1,30 +1,42 @@
 "use client";
 
-import { useConnect, useAccount, useDisconnect } from "wagmi";
 import { Button } from "@/components/ui/button";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { metaMask } from "wagmi/connectors";
 
 export function WalletConnect() {
-  const { connect, connectors, error } = useConnect();
-  const { isConnected, address } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { connect, isPending } = useConnect();
   const { disconnect } = useDisconnect();
 
-  if (isConnected) {
+  const handleConnect = async () => {
+    try {
+      await connect({
+        connector: metaMask()
+      });
+    } catch (error) {
+      console.error("Connection error:", error);
+    }
+  };
+
+  if (isConnected && address) {
     return (
-      <div className="flex items-center gap-2">
-        <span className="text-sm">Connected: {address?.slice(0, 6)}...{address?.slice(-4)}</span>
-        <Button variant="destructive" onClick={() => disconnect()}>Disconnect</Button>
-      </div>
+      <Button
+        variant="outline"
+        onClick={() => disconnect()}
+      >
+        {`${address.slice(0, 6)}...${address.slice(-4)}`}
+      </Button>
     );
   }
 
   return (
-    <div>
-      {connectors.map((connector) => (
-        <Button key={connector.id} onClick={() => connect({ connector })}>
-          Connect Wallet
-        </Button>
-      ))}
-      {error && <p className="text-red-500 text-sm">{error.message}</p>}
-    </div>
+    <Button
+      onClick={handleConnect}
+      disabled={isPending}
+      className="bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white"
+    >
+      {isPending ? 'Connecting...' : 'Connect Wallet'}
+    </Button>
   );
 }
