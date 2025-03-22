@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Shield, Microscope, AlertTriangle, Zap, Info, Users, DollarSign } from "lucide-react";
+import { Brain, Shield, Microscope, AlertTriangle, Zap, Info, Users, DollarSign, Wallet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePredictionMarket } from "@/lib/usePredictionMarket";
@@ -181,33 +181,9 @@ export const MarketsList = React.memo(function MarketsList() {
       ? market.resolutionTime.toString() 
       : market.resolutionTime;
     
-    // Set default odds if not provided
-    const odds = market.odds || { 
-      yes: Math.floor(Math.random() * 70) + 30, 
-      no: 0 
-    };
-    
-    // Ensure odds always add up to 100%
-    if (!odds.no) {
-      odds.no = 100 - odds.yes;
-    }
-    
-    // Set default volume if not provided
-    const volume = market.volume || Math.floor(Math.random() * 2000000 + 500000).toString();
-    
-    // Format descriptions for display
-    const description = market.description || `Prediction market for ${market.question}`;
-    
-    // Format sources if not available
-    const source = market.source || "Based on reliable market data and expert analysis";
-    
     return { 
       ...market, 
-      resolutionTime,
-      odds,
-      volume,
-      description,
-      source
+      resolutionTime
     };
   });
 
@@ -413,15 +389,20 @@ export const MarketsList = React.memo(function MarketsList() {
                           )}
                           
                           <div className="flex gap-2 justify-end">
-                            <Link href={`/predict?tab=bet&marketId=${market.id}`}>
+                            <Link 
+                              href={`/predict?tab=bet&marketId=${market.id}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Force the page refresh to ensure the tab changes
+                                window.location.href = `/predict?tab=bet&marketId=${market.id}`;
+                              }}
+                            >
                               <motion.button
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="text-sm px-3 py-1 rounded-full bg-muted hover:bg-muted/80"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                }}
+                                className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white font-medium flex items-center gap-2 shadow-md"
                               >
+                                <Wallet className="h-4 w-4" />
                                 Place Bet
                               </motion.button>
                             </Link>

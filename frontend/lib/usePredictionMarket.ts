@@ -11,12 +11,12 @@ interface Market {
   resolved: boolean;
   winningOutcome: bigint;
   bettingAsset: string;
-  outcomes?: string[];
+  outcomes: string[];
   category: string;
-  description?: string;
-  source?: string;
-  volume?: string;
-  odds?: {
+  description: string;
+  source: string;
+  volume: string;
+  odds: {
     yes: number;
     no: number;
   };
@@ -62,7 +62,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "ETH",
           outcomes: ["Yes", "No"],
-          category: "ai"
+          category: "ai",
+          description: "Will Artificial General Intelligence (AGI) with capabilities matching or exceeding human performance across most economically valuable tasks be achieved by December 31, 2030?",
+          source: "Based on publications from leading AI research institutions",
+          volume: "1500000",
+          odds: { yes: 65, no: 35 }
         },
         {
           id: 2,
@@ -72,7 +76,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "USDC",
           outcomes: ["Yes", "No"],
-          category: "ai"
+          category: "ai",
+          description: "Will GPT-5 or equivalent LLM convince at least 80% of AI experts it is human in a formal Turing test by December 31, 2025?",
+          source: "Based on published academic research and formal testing",
+          volume: "2200000",
+          odds: { yes: 70, no: 30 }
         },
         {
           id: 3,
@@ -82,7 +90,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "ZETA",
           outcomes: ["Yes", "No"],
-          category: "ai"
+          category: "ai",
+          description: "Will the US Congress pass comprehensive AI regulation legislation by December 31, 2025?",
+          source: "Based on official Congressional records and voting",
+          volume: "1400000",
+          odds: { yes: 45, no: 55 }
         },
         
         // Pandemic Risk Markets
@@ -94,7 +106,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "ETH",
           outcomes: ["Yes", "No"],
-          category: "pandemic"
+          category: "pandemic",
+          description: "Will a new viral variant cause >100,000 excess deaths globally before December 31, 2024?",
+          source: "Based on WHO official declarations and public health monitoring",
+          volume: "2100000",
+          odds: { yes: 25, no: 75 }
         },
         {
           id: 5,
@@ -104,7 +120,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "USDC",
           outcomes: ["Yes", "No"],
-          category: "pandemic"
+          category: "pandemic",
+          description: "Will wastewater surveillance from major hospitals detect a novel pathogen of concern before October 31, 2024?",
+          source: "Verified by CDC and global public health authorities",
+          volume: "1300000",
+          odds: { yes: 30, no: 70 }
         },
         {
           id: 6,
@@ -114,7 +134,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "ZETA",
           outcomes: ["Yes", "No"],
-          category: "pandemic"
+          category: "pandemic",
+          description: "Will antimicrobial resistance (AMR) cause more than 1 million directly attributable deaths globally in 2025?",
+          source: "Based on WHO and CDC official reports",
+          volume: "1600000",
+          odds: { yes: 40, no: 60 }
         },
         
         // Cyber Threats Markets
@@ -126,7 +150,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "ETH",
           outcomes: ["Yes", "No"],
-          category: "cyber"
+          category: "cyber",
+          description: "Will any of the top 3 cloud providers (AWS, Azure, GCP) experience a global outage lasting >4 hours before Dec 31, 2024?",
+          source: "Verified by independent monitoring services",
+          volume: "800000",
+          odds: { yes: 45, no: 55 }
         },
         {
           id: 8,
@@ -136,7 +164,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "USDC",
           outcomes: ["Yes", "No"],
-          category: "cyber"
+          category: "cyber",
+          description: "Will a confirmed nation-state cyberattack cause disruption to critical infrastructure (power grid, water, etc.) for >24 hours in a G20 country before June 30, 2025?",
+          source: "Based on official government attributions and security firm analysis",
+          volume: "1800000",
+          odds: { yes: 55, no: 45 }
         },
         {
           id: 9,
@@ -146,7 +178,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "ZETA",
           outcomes: ["Yes", "No"],
-          category: "cyber"
+          category: "cyber",
+          description: "Will a quantum computer successfully break RSA-2048 or equivalent encryption before December 31, 2026?",
+          source: "Based on academic publications and government announcements",
+          volume: "1700000",
+          odds: { yes: 15, no: 85 }
         },
         
         // Misinformation Markets
@@ -158,7 +194,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "ETH",
           outcomes: ["Yes", "No"],
-          category: "misinfo"
+          category: "misinfo",
+          description: "Will a synthetic/AI-generated media cause a >3% single-day drop in a major stock index before Dec 31, 2024?",
+          source: "Verified by market data and media analysis reports",
+          volume: "1200000",
+          odds: { yes: 40, no: 60 }
         },
         {
           id: 11,
@@ -168,7 +208,11 @@ export function usePredictionMarket() {
           winningOutcome: BigInt(0),
           bettingAsset: "USDC",
           outcomes: ["Yes", "No"],
-          category: "misinfo"
+          category: "misinfo",
+          description: "Will a head of state or government resign or be removed from office due to a deepfake-related scandal before March 31, 2025?",
+          source: "Verified by multiple international news sources",
+          volume: "950000",
+          odds: { yes: 35, no: 65 }
         }
       ];
       
@@ -286,5 +330,3 @@ export function usePredictionMarket() {
     placeBet: handlePlaceBet
   };
 }
-//sas/ /   T e s t   c h a n g e  
- 

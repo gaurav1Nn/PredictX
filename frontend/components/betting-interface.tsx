@@ -12,7 +12,7 @@ import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Shield, Microscope, AlertTriangle, Info, ArrowRight, Wallet } from "lucide-react";
 
-// Add Market interface with description property
+// Market interface with description property
 interface Market {
   id: number;
   question: string;
@@ -20,12 +20,12 @@ interface Market {
   resolved: boolean;
   winningOutcome: bigint;
   bettingAsset: string;
-  outcomes?: string[];
-  description?: string;
+  outcomes: string[];
+  description: string;
   category: string;
-  source?: string;
-  volume?: string;
-  odds?: {
+  source: string;
+  volume: string;
+  odds: {
     yes: number;
     no: number;
   };
@@ -53,7 +53,17 @@ export const BettingInterface = React.memo(function BettingInterface() {
   // Update market selection if marketId is passed via URL
   useEffect(() => {
     if (initialMarketId && markets.length > 0) {
-      setSelectedMarket(initialMarketId);
+      // Ensure the marketId exists in the available markets
+      const marketExists = markets.some(m => m.id.toString() === initialMarketId);
+      if (marketExists) {
+        setSelectedMarket(initialMarketId);
+        
+        // Also set the default asset for this market
+        const selectedMarketData = markets.find(m => m.id.toString() === initialMarketId);
+        if (selectedMarketData && selectedMarketData.bettingAsset) {
+          setSelectedAsset(selectedMarketData.bettingAsset);
+        }
+      }
     }
   }, [initialMarketId, markets]);
 
@@ -165,14 +175,14 @@ export const BettingInterface = React.memo(function BettingInterface() {
                     Select a Market
                   </label>
                   <Select value={selectedMarket} onValueChange={setSelectedMarket}>
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12 border-primary/20 hover:border-primary">
                       <SelectValue placeholder="Choose a prediction market" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80">
                       {markets.map((market) => (
-                        <SelectItem key={market.id} value={market.id.toString()} className="py-3">
+                        <SelectItem key={market.id} value={market.id.toString()} className="py-3 hover:bg-muted/80">
                           <div className="flex flex-col">
-                            <span>{market.question}</span>
+                            <span className="font-medium">{market.question}</span>
                             <span className="text-xs text-muted-foreground mt-1">
                               Resolution: {new Date(Number(market.resolutionTime) * 1000).toLocaleDateString()}
                             </span>
@@ -187,10 +197,10 @@ export const BettingInterface = React.memo(function BettingInterface() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="p-3 bg-muted/30 rounded-lg border border-muted space-y-3"
+                    className="p-4 bg-muted/30 rounded-lg border border-muted space-y-3"
                   >
                     <div className="flex items-start gap-2">
-                      <Info className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                      <Info className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
                       <div>
                         <h4 className="text-sm font-medium">Market Details</h4>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -199,7 +209,7 @@ export const BettingInterface = React.memo(function BettingInterface() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-4 text-xs">
+                    <div className="flex flex-wrap items-center gap-4 text-xs">
                       <div>
                         <span className="font-medium">Category:</span>{" "}
                         <Badge variant="outline" className="text-xs">
@@ -235,14 +245,14 @@ export const BettingInterface = React.memo(function BettingInterface() {
                         Your Prediction
                       </label>
                       <Select value={outcomeIndex} onValueChange={setOutcomeIndex}>
-                        <SelectTrigger className="h-12">
+                        <SelectTrigger className="h-12 border-primary/20 hover:border-primary">
                           <SelectValue placeholder="What's your prediction?" />
                         </SelectTrigger>
                         <SelectContent>
                           {markets
                             .find((m) => m.id === parseInt(selectedMarket))
                             ?.outcomes?.map((outcome: string, index: number) => (
-                              <SelectItem key={index} value={index.toString()}>
+                              <SelectItem key={index} value={index.toString()} className="py-2 hover:bg-muted/80">
                                 {outcome}
                               </SelectItem>
                             ))}
@@ -258,7 +268,7 @@ export const BettingInterface = React.memo(function BettingInterface() {
                       Betting Asset
                     </label>
                     <Select value={selectedAsset} onValueChange={setSelectedAsset}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 border-primary/20 hover:border-primary">
                         <SelectValue>
                           <div className="flex items-center gap-2">
                             {selectedAsset && AssetIcons[selectedAsset as keyof typeof AssetIcons]?.()}
@@ -268,7 +278,7 @@ export const BettingInterface = React.memo(function BettingInterface() {
                       </SelectTrigger>
                       <SelectContent>
                         {availableAssets.map(asset => (
-                          <SelectItem key={asset} value={asset}>
+                          <SelectItem key={asset} value={asset} className="py-2 hover:bg-muted/80">
                             <div className="flex items-center gap-2">
                               {AssetIcons[asset as keyof typeof AssetIcons]?.()}
                               {asset}
@@ -293,7 +303,7 @@ export const BettingInterface = React.memo(function BettingInterface() {
                         onChange={(e) => setAmount(e.target.value)}
                         placeholder="Enter amount"
                         step="0.01"
-                        className="h-12 pl-8"
+                        className="h-12 pl-8 border-primary/20 hover:border-primary focus-visible:ring-primary/20"
                       />
                       <div className="absolute left-3 top-1/2 -translate-y-1/2">
                         {selectedAsset && AssetIcons[selectedAsset as keyof typeof AssetIcons]?.()}
@@ -302,21 +312,25 @@ export const BettingInterface = React.memo(function BettingInterface() {
                   </div>
                 </div>
 
-                <div className="pt-3">
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <div className="pt-5">
+                  <motion.div 
+                    whileHover={{ scale: 1.02 }} 
+                    whileTap={{ scale: 0.98 }}
+                    className="overflow-hidden rounded-lg shadow-lg"
+                  >
                     <Button 
                       type="submit" 
                       disabled={!selectedMarket || !outcomeIndex || !amount || isSubmitting}
-                      className="w-full h-12 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white"
+                      className="w-full h-14 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 text-white text-lg font-semibold"
                     >
                       {isSubmitting ? (
                         <span className="flex items-center justify-center">
                           <span className="mr-2">Processing</span>
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></div>
+                          <div className="h-5 w-5 animate-spin rounded-full border-3 border-solid border-current border-r-transparent"></div>
                         </span>
                       ) : (
                         <span className="flex items-center justify-center gap-2">
-                          <Wallet className="h-4 w-4" />
+                          <Wallet className="h-5 w-5" />
                           <span>Place Your Bet</span>
                         </span>
                       )}

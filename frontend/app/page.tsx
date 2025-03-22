@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, Suspense } from "react";
+import React, { useEffect, Suspense, useState } from "react";
 import { useAccount, useConnect } from "wagmi";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WalletConnect } from "@/components/wallet-connect";
@@ -9,15 +9,27 @@ import { LandingHero } from "@/components/landing-hero";
 import { MarketsList } from "@/components/markets-list";
 import { BettingInterface } from "@/components/betting-interface";
 import { Dashboard } from "@/components/dashboard";
-import { CreateMarket } from "@/components/create-market";
 import { motion } from "framer-motion";
 import { ErrorBoundary } from "react-error-boundary";
 import { injected, metaMask } from "wagmi/connectors";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function MainContent() {
+  // Get the tab from URL parameters
+  const searchParams = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'markets';
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  
+  // Update activeTab when searchParams change
+  useEffect(() => {
+    const newTab = searchParams.get('tab');
+    if (newTab) {
+      setActiveTab(newTab);
+    }
+  }, [searchParams]);
+  
   return (
     <motion.div
       className="container mx-auto px-4 py-8"
@@ -25,21 +37,38 @@ function MainContent() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Tabs defaultValue="markets" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="markets">Active Markets</TabsTrigger>
-          <TabsTrigger value="bet">Place Bet</TabsTrigger>
-          <TabsTrigger value="create">Create Market</TabsTrigger>
-          <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+      <Tabs value={activeTab} className="space-y-4" onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger 
+            value="markets" 
+            onClick={() => {
+              window.history.pushState({}, '', '/?tab=markets');
+            }}
+          >
+            Active Markets
+          </TabsTrigger>
+          <TabsTrigger 
+            value="bet"
+            onClick={() => {
+              window.history.pushState({}, '', '/?tab=bet');
+            }}
+          >
+            Place Bet
+          </TabsTrigger>
+          <TabsTrigger 
+            value="portfolio"
+            onClick={() => {
+              window.history.pushState({}, '', '/?tab=portfolio');
+            }}
+          >
+            Portfolio
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="markets" className="space-y-4">
           <MarketsList />
         </TabsContent>
         <TabsContent value="bet" className="space-y-4">
           <BettingInterface />
-        </TabsContent>
-        <TabsContent value="create" className="space-y-4">
-          <CreateMarket />
         </TabsContent>
         <TabsContent value="portfolio" className="space-y-4">
           <Dashboard />
@@ -53,6 +82,11 @@ export default function Home() {
   const { isConnected } = useAccount();
   const { connect, isPending } = useConnect();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const showLanding = searchParams.get('showLanding');
+  
+  // Add a state to track if user clicked "Start Predicting"
+  const [startedPredicting, setStartedPredicting] = useState(false);
   
   const handleConnect = async () => {
     console.log("Handle connect called"); // Debug log
@@ -60,15 +94,17 @@ export default function Home() {
       // Track if we're already connected before attempting to connect
       const wasConnected = isConnected;
       
+      // Set startedPredicting to true to indicate user wants to go to markets
+      setStartedPredicting(true);
+      
       await connect({
         connector: metaMask()
       });
       
       // Small delay to ensure connection state is updated
       setTimeout(() => {
-        // If we weren't connected before but are now, or if we were already connected,
-        // then redirect to the predict page
-        if ((!wasConnected && isConnected) || wasConnected) {
+        // Only redirect if user clicked Start Predicting
+        if (startedPredicting && ((!wasConnected && isConnected) || wasConnected)) {
           router.push("/predict?tab=markets");
         }
       }, 500);
@@ -77,7 +113,8 @@ export default function Home() {
     }
   };
 
-  if (!isConnected) {
+  // Show landing page if not connected, not started predicting, or showLanding is set
+  if (!isConnected || !startedPredicting || showLanding === 'true') {
     return (
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <div className="min-h-screen bg-background">
@@ -89,7 +126,13 @@ export default function Home() {
           >
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                <Link 
+                  href={{
+                    pathname: '/',
+                    query: { showLanding: 'true' }
+                  }} 
+                  className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+                >
                   PredictX
                 </Link>
               </motion.div>
@@ -118,7 +161,13 @@ export default function Home() {
         >
           <div className="container mx-auto px-4 py-4 flex justify-between items-center">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              <Link 
+                href={{
+                  pathname: '/',
+                  query: { showLanding: 'true' }
+                }} 
+                className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+              >
                 PredictX
               </Link>
             </motion.div>

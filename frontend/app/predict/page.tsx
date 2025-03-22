@@ -16,6 +16,14 @@ function MainContent() {
   const searchParams = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'markets';
   const [activeTab, setActiveTab] = useState(defaultTab);
+  
+  // Update activeTab when searchParams change
+  useEffect(() => {
+    const newTab = searchParams.get('tab');
+    if (newTab) {
+      setActiveTab(newTab);
+    }
+  }, [searchParams]);
 
   return (
     <AnimatePresence mode="wait">
@@ -26,7 +34,7 @@ function MainContent() {
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.5 }}
       >
-        <Tabs defaultValue={activeTab} className="space-y-4" onValueChange={setActiveTab}>
+        <Tabs value={activeTab} className="space-y-4" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="markets">Active Markets</TabsTrigger>
             <TabsTrigger value="bet">Place Bet</TabsTrigger>
